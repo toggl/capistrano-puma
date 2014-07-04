@@ -8,8 +8,10 @@ environment '<%= fetch(:puma_env) %>'
 <% end %>
 pidfile "<%=fetch(:puma_pid)%>"
 state_path "<%=fetch(:puma_state)%>"
-stdout_redirect '<%=fetch(:puma_access_log)%>', '<%=fetch(:puma_error_log)%>', true
 
+<% if fetch(:puma_access_log) && fetch(:puma_error_log) %>
+stdout_redirect '<%=fetch(:puma_access_log)%>', '<%=fetch(:puma_error_log)%>', true
+<% end %>
 
 threads <%=fetch(:puma_threads).join(',')%>
 
