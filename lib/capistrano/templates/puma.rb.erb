@@ -1,5 +1,5 @@
 #!/usr/bin/env puma
-
+require 'English'
 directory '<%= current_path %>'
 rackup "<%=fetch(:puma_rackup)%>"
 environment '<%= fetch(:puma_env) %>'
