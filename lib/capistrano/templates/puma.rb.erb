@@ -23,6 +23,40 @@ worker_timeout <%= fetch(:puma_worker_timeout).to_i %>
 preload_app!
 <% end %>
 
+def clean_staled_socket
+  %w(
+    <%=fetch(:puma_bind)%>
+    <%=fetch(:puma_pid)%>
+    <%=fetch(:puma_state)%>
+  ).each do |stalled_file|
+    stalled_path = stalled_file.gsub('unix://','').strip
+    if File.exist?(stalled_path)
+      $stderr.puts "Deleting file #{stalled_path}: #{File.delete(stalled_path)}"
+    end
+  end
+end
+
+pid_file_name = '<%= fetch :puma_pid %>'
+if File.exist?( pid_file_name)
+  begin
+    pid = `cat #{pid_file_name}`
+    if $CHILD_STATUS.exitstatus &&
+      $CHILD_STATUS.exitstatus.zero? &&
+      Process.getpgid(pid.to_i)
+      $stdout.puts 'Puma is already running'
+    else
+      $stdout.puts 'Failed to open pidfile'
+      clean_staled_socket
+    end
+  rescue Errno::ESRCH
+    $stdout.puts 'No process found via pidfile'
+    clean_staled_socket
+  end
+else
+  $stdout.puts 'Pidfile not found'
+  clean_staled_socket
+end
+
 on_restart do
   puts 'Refreshing Gemfile'
   ENV["BUNDLE_GEMFILE"] = "<%= fetch(:bundle_gemfile, "#{current_path}/Gemfile") %>"
