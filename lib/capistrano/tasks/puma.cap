@@ -3,7 +3,7 @@ namespace :load do
   task :defaults do
     set :puma_default_hooks, -> { true }
     set :puma_role, :app
-    set :puma_env, -> { fetch(:rack_env, fetch(:rails_env, fetch(:stage))) }
+    set :puma_env, -> {fetch(:rack_env, -> {fetch(:rails_env, -> {fetch(:stage)})}) }
     # Configure "min" to be the minimum number of threads to use to answer
     # requests and "max" the maximum.
     set :puma_threads, [0, 16]
@@ -24,8 +24,7 @@ namespace :load do
 
     # Rbenv and RVM integration
     set :rbenv_map_bins, fetch(:rbenv_map_bins).to_a.concat(%w{ puma pumactl })
-    set :rvm_map_bins, fetch(:rvm_map_bins).to_a.concat(%w{ puma pumactl })
-  end
+  endt
 end
 
 namespace :deploy do
