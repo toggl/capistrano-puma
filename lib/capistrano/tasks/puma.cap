@@ -4,6 +4,7 @@ namespace :load do
     set :puma_default_hooks, -> { true }
     set :puma_role, :app
     set :puma_env, -> {fetch(:rack_env, -> {fetch(:rails_env, -> {fetch(:stage)})}) }
+    fetch :puma_env # workaround to eval lambdas for above
     # Configure "min" to be the minimum number of threads to use to answer
     # requests and "max" the maximum.
     set :puma_threads, [0, 16]
