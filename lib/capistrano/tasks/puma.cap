@@ -24,7 +24,7 @@ namespace :load do
 
     # Rbenv and RVM integration
     set :rbenv_map_bins, fetch(:rbenv_map_bins).to_a.concat(%w{ puma pumactl })
-  endt
+  end
 end
 
 namespace :deploy do
