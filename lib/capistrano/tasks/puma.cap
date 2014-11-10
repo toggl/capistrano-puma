@@ -1,3 +1,4 @@
+
 namespace :load do
   task :defaults do
     set :puma_default_hooks, -> { true }
@@ -18,6 +19,7 @@ namespace :load do
     set :puma_preload_app, true
     set :puma_start_command, -> { "sudo /usr/bin/#{fetch :application}_start"}
     set :puma_stop_command,  -> { "sudo /usr/bin/#{fetch :application}_stop"}
+    set :puma_prune_bundler, false
 
     # Rbenv and RVM integration
     set :rbenv_map_bins, fetch(:rbenv_map_bins).to_a.concat(%w{ puma pumactl })
@@ -120,6 +122,9 @@ namespace :puma do
         "lib/capistrano/templates/#{from}.rb.erb",
         "lib/capistrano/templates/#{from}.rb",
         "lib/capistrano/templates/#{from}.erb",
+        "config/deploy/templates/#{from}.rb.erb",
+        "config/deploy/templates/#{from}.rb",
+        "config/deploy/templates/#{from}.erb",
         File.expand_path("../../templates/#{from}.rb.erb", __FILE__),
         File.expand_path("../../templates/#{from}.erb", __FILE__)
     ].each do |path|

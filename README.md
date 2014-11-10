@@ -1,3 +1,4 @@
+[![Gem Version](https://badge.fury.io/rb/capistrano3-puma.svg)](http://badge.fury.io/rb/capistrano3-puma)
 # Capistrano::Puma
 
 ## Installation
@@ -20,12 +21,37 @@ And then execute:
 
     require 'capistrano/puma'
     require 'capistrano/puma/workers' #if you want to control the workers (in cluster mode)
-    require 'capistrano/puma/jungle' #if you need the jungle tasks
-    require 'capistrano/puma/monit' #if you need the monit tasks
+    require 'capistrano/puma/jungle'  #if you need the jungle tasks
+    require 'capistrano/puma/monit'   #if you need the monit tasks
+    require 'capistrano/puma/nginx'   #if you want to upload a nginx site template
 ```
 
+then you can use ```cap -vT``` to list tasks
+```
+cap puma:nginx_config # upload a nginx site config(eg. /etc/nginx/site-enabled/)
+cap puma:config  # upload puma config(eg. shared/puma.config)
+```
+you may want to customize these two templates locally before uploading
+```
+rails g capistrano:nginx_puma:config
+```
 
-Configurable options, shown here with defaults: Please note the configuration options below are not required unless you are trying to override a default setting, for instance if you are deploying on a host on which you do not have sudo or root privileges and you need to restrict the path. These settings go in the deploy.rb file. 
+if your nginx server configuration is not located in /etc/nginx, you may need to customize nginx_sites_available_path and nginx_sites_enabled_path
+```
+set :nginx_sites_available_path, "/etc/nginx/sites-available"
+set :nginx_sites_enabled_path, "/etc/nginx/sites-enabled"
+```
+
+By default, ```nginx_config``` will be executed with ```:web``` role. But you can assign it to a different role:
+```
+set :puma_nginx, :foo
+```
+or define a standalone one:
+```
+role :puma_nginx, %w{root@example.com}
+```
+
+Configurable options, shown here with defaults: Please note the configuration options below are not required unless you are trying to override a default setting, for instance if you are deploying on a host on which you do not have sudo or root privileges and you need to restrict the path. These settings go in the deploy.rb file.
 
 ```ruby
     set :puma_rackup, -> { File.join(current_path, 'config.ru') }
@@ -42,6 +68,7 @@ Configurable options, shown here with defaults: Please note the configuration op
     set :puma_worker_timeout, nil
     set :puma_init_active_record, false
     set :puma_preload_app, true
+    set :puma_prune_bundler, false
 ```
 For Jungle tasks (beta), these options exist:
 ```ruby
@@ -67,6 +94,10 @@ Ensure that the following directories are shared (via ``linked_dirs``):
     tmp/pids tmp/sockets log
 
 ## Changelog
+- 0.8.2: Start task creates a conf file if none exists @stevemadere
+- 0.8.1: Fixed nginx task @hnatt, support for prune_bundler @behe
+- 0.8.0: Some changes
+- 0.7.0: added Nginx template generator  @dfang
 - 0.6.1: added :puma_default_hooks, you can turn off the automatic hooks by setting it false
 - 0.6.0: Remove `daemonize true` from default puma.rb file. Explicitly pass `--daemon` flag when needed.
 - 0.5.1: Added worker_timeout option
@@ -93,15 +124,16 @@ Ensure that the following directories are shared (via ``linked_dirs``):
 - 0.0.8: puma.rb is automatically generated if not present. Fixed RVM issue.
 - 0.0.7: Gem pushed to rubygems as capistrano3-puma. Support of Redhat based OS for Jungle init script.
 
-## TODO
 
 ## Contributors
 
-- [Ruohan Chen] (https://github.com/crhan)
+- [Ruohan Chen](https://github.com/crhan)
 - [molfar](https://github.com/molfar)
 - [ayaya](https://github.com/ayamomiji)
 - [Shane O'Grady](https://github.com/shaneog)
 - [Jun Lin](https://github.com/linjunpop)
+- [fang duan](https://github.com/dfang)
+- [Steve Madere](https://github.com/stevemadere)
 
 ## Contributing
 
