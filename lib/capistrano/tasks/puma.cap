@@ -19,6 +19,7 @@ namespace :load do
     set :puma_preload_app, true
     set :puma_start_command, -> { "sudo /usr/bin/#{fetch :application}_start"}
     set :puma_stop_command,  -> { "sudo /usr/bin/#{fetch :application}_stop"}
+    set :puma_control_app_uri, nil
     set :puma_prune_bundler, false
 
     # Rbenv and RVM integration
