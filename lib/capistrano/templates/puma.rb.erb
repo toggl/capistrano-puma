@@ -31,7 +31,7 @@ def clean_staled_socket
     <%=fetch(:puma_pid)%>
     <%=fetch(:puma_state)%>
   ).each do |stalled_file|
-    stalled_path = stalled_file.gsub('unix:/','').gsub('//','/').strip
+    stalled_path = stalled_file.gsub('unix:','').gsub('//','/').strip
 
     if File.exist?(stalled_path)
       $stderr.puts "Deleting file #{stalled_path}: #{File.delete(stalled_path)}"
